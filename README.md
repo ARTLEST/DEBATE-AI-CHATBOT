@@ -1,6 +1,7 @@
 # 🎯 Debate Coach AI
 
 A comprehensive AI-powered debate training platform that helps users improve their argumentation skills through real-time analysis, feedback, and interactive coaching.
+NOTE - USE YYOUR OWN API KEY IN .ENV FILE AND .ENV EXAMPLE FILE
 
 ## Features
 
@@ -275,3 +276,4 @@ For production use:
 - [ ] Mobile app
 - [ ] Multi-language support
 - [ ] Advanced analytics dashboard
+
