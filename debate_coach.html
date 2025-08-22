@@ -1,0 +1,469 @@
+<!doctype html>
+<py-script src="localhost:8000"></py-script>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/png" href="/static/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="description" content="Debate Coach AI - Your Personal Debate Training Assistant" />
+    <title>Debate Coach AI by Team-A</title>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #1f2937;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .logo { 
+            font-size: 2.5rem; 
+            font-weight: 800; 
+            color: #2563eb;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .tagline { 
+            font-size: 1.2rem; 
+            color: #6b7280; 
+            font-weight: 500;
+        }
+        
+        .main-interface {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .chat-interface {
+            height: 400px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8fafc;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 80%;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .user-message {
+            background: #2563eb;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .ai-message {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .chat-input {
+            display: flex;
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            margin: 0;
+            border-radius: 8px 0 0 8px;
+        }
+        
+        .chat-input button {
+            border-radius: 0 8px 8px 0;
+            width: auto;
+            padding: 15px 20px;
+        }
+        
+        .feedback-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .score {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #2563eb;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .feedback-section {
+            margin-bottom: 20px;
+        }
+        
+        .feedback-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        
+        .feedback-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .feedback-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .feedback-list li:before {
+            content: "•";
+            color: #2563eb;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #6b7280;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f4f6;
+            border-radius: 50%;
+            border-top-color: #2563eb;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .main-interface {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="logo">🎯 Debate Coach AI</h1>
+            <p class="tagline">by Team-A • Your Personal Debate Training Assistant</p>
+        </header>
+        
+        <div class="main-interface">
+            <div class="card">
+                <h2 class="card-title">
+                    📝 Argument Analysis
+                </h2>
+                <form id="debateForm">
+                    <div class="form-group">
+                        <label for="topic">Debate Topic</label>
+                        <input type="text" id="topic" placeholder="e.g., Should social media be regulated?" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="position">Your Position</label>
+                        <select id="position" required>
+                            <option value="">Select your stance</option>
+                            <option value="for">For/Pro</option>
+                            <option value="against">Against/Con</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="argument">Your Argument</label>
+                        <textarea id="argument" placeholder="Present your main argument with supporting points..." required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn" id="analyzeBtn">
+                        Analyze My Argument
+                    </button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">
+                    💬 AI Debate Coach
+                </h2>
+                <div class="chat-interface">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message ai-message">
+                            <strong>AI Coach:</strong> Hello! I'm your debate coach. Ask me anything about debate techniques, argument structure, or get feedback on your points!
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Ask me about debate strategies...">
+                        <button id="sendChat" class="btn">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="feedbackCard" class="feedback-card" style="display: none;">
+            <h3 class="card-title">📊 AI Analysis Results</h3>
+            <div id="feedbackContent"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+    <script>
+        // Initialize Socket.IO for real-time chat
+        const socket = io();
+        
+        // DOM elements
+        const debateForm = document.getElementById('debateForm');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const sendChat = document.getElementById('sendChat');
+        const feedbackCard = document.getElementById('feedbackCard');
+        const feedbackContent = document.getElementById('feedbackContent');
+        
+        // API base URL - change this to your deployed backend URL
+        const API_BASE = 'http://localhost:5000/api';
+        
+        // Auth token (you'd get this from login)
+        let authToken = localStorage.getItem('authToken');
+        
+        // Debate form submission
+        debateForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const topic = document.getElementById('topic').value;
+            const position = document.getElementById('position').value;
+            const argument = document.getElementById('argument').value;
+            
+            analyzeBtn.textContent = 'Analyzing...';
+            analyzeBtn.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_BASE}/debate/analyze`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ topic, position, argument })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayFeedback(data.feedback);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Network error: ' + error.message);
+            } finally {
+                analyzeBtn.textContent = 'Analyze My Argument';
+                analyzeBtn.disabled = false;
+            }
+        });
+        
+        // Chat functionality
+        function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+            
+            // Add user message to chat
+            addMessageToChat(message, 'user');
+            
+            // Emit to server
+            socket.emit('chat_message', { message, user_id: 'user123' });
+            
+            chatInput.value = '';
+        }
+        
+        sendChat.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+        
+        // Socket.IO events
+        socket.on('ai_response', (data) => {
+            addMessageToChat(data.message, 'ai');
+        });
+        
+        function addMessageToChat(message, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            
+            if (sender === 'ai') {
+                messageDiv.innerHTML = `<strong>AI Coach:</strong> ${message}`;
+            } else {
+                messageDiv.textContent = message;
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function displayFeedback(feedback) {
+            feedbackContent.innerHTML = `
+                <div class="score">Score: ${feedback.score}/10</div>
+                
+                <div class="feedback-section">
+                    <div class="feedback-title">✅ Strengths</div>
+                    <ul class="feedback-list">
+                        ${feedback.strengths.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="feedback-section">
+                    <div class="feedback-title">🎯 Areas for Improvement</div>
+                    <ul class="feedback-list">
+                        ${feedback.improvements.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="feedback-section">
+                    <div class="feedback-title">🤔 Potential Counterarguments</div>
+                    <ul class="feedback-list">
+                        ${feedback.counterarguments.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="feedback-section">
+                    <div class="feedback-title">📚 Suggested Evidence</div>
+                    <ul class="feedback-list">
+                        ${feedback.evidence.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="feedback-section">
+                    <div class="feedback-title">💡 Overall Feedback</div>
+                    <p>${feedback.overall_feedback}</p>
+                </div>
+            `;
+            
+            feedbackCard.style.display = 'block';
+            feedbackCard.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Mock auth for demo (implement proper auth flow)
+        if (!authToken) {
+            // For demo purposes, create a mock token
+            authToken = 'mock-token-for-demo';
+            localStorage.setItem('authToken', authToken);
+        }
+    </script>
+</body>
+</html>

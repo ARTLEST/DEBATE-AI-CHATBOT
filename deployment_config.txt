@@ -1,0 +1,52 @@
+# Dockerfile
+FROM python:3.9-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+EXPOSE 5000
+
+CMD ["gunicorn", "--worker-class", "eventlet", "-w", "1", "--bind", "0.0.0.0:5000", "debate_coach:app"]
+
+---
+# docker-compose.yml
+version: '3.8'
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=${SECRET_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+
+---
+# .env file (create this locally)
+SECRET_KEY=your-super-secret-key-here
+OPENAI_API_KEY=your-openai-api-key
+DATABASE_URL=sqlite:///debate_coach.db
+
+---
+# Procfile (for Heroku)
+web: gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:$PORT app:app
+
+---
+# app.yaml (for Google App Engine)
+runtime: python39
+
+env_variables:
+  SECRET_KEY: "your-secret-key"
+  OPENAI_API_KEY: "your-openai-key"
+
+automatic_scaling:
+  min_instances: 1
+  max_instances: 10
